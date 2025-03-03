@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PrivateRoute from "./Components/PrivateRoute";  // Import PrivateRoute
 
 import Home from "./Components/Home";
 import Shop from "./Components/Shop";  
@@ -20,24 +19,23 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes - Accessible without login */}
+        <Route path="/home" element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/profile" element={<ProfilePage />} />
+
+        <Route path="/categories" element={<CategoryCards />} />
+        <Route path="/dresses" element={<Dresses />} />
+        <Route path="/tops" element={<Tops />} />
+        <Route path="/sets" element={<Sets />} />
+        
+        {/* Protect the Cart Page */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/logout" element={<Logout />} />
+        
+        <Route path="/products" element={<ProductList />} /> 
+        <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Private Routes - Only accessible after login */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/categories" element={<CategoryCards />} />
-          <Route path="/dresses" element={<Dresses />} />
-          <Route path="/tops" element={<Tops />} />
-          <Route path="/sets" element={<Sets />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-        </Route>
       </Routes>
     </Router>
   );
