@@ -56,36 +56,33 @@ class LoginView(APIView):
 #------------------------------------------------------------------------------------------------
 # profile creation 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from .models import Profile
 from .serializers import ProfileSerializer
-from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]  # Only logged-in users can access this
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """Retrieve the logged-in user's profile"""
-        profile = get_object_or_404(Profile, user=request.user)
+        """Retrieve the logged-in user's profile with email"""
+        profile = get_object_or_404(Profile, user=request.user)  # Fetch existing profile or return 404
         serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
         """Update the logged-in user's profile"""
-        profile = get_object_or_404(Profile, user=request.user)
+        profile, created = Profile.objects.get_or_create(user=request.user)
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
-    def delete(self, request):
-        """Delete the logged-in user's profile"""
-        profile = get_object_or_404(Profile, user=request.user)
-        profile.delete()
-        return Response({"message": "Profile deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #------------------------------------------------------------------------------------------------

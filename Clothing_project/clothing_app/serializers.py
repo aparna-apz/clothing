@@ -32,13 +32,22 @@ class UserSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-# ------------------- Login Serializer -------------------
+# ------------------- profile Serializer -------------------
+from .models import Profile
+
+from rest_framework import serializers
 from .models import Profile
 
 class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()  # Fetch email from User model
+
     class Meta:
         model = Profile
-        fields = ['name', 'phone_number', 'address']
+        fields = ['name', 'phone_number', 'address', 'email']  # Include email field
+
+    def get_email(self, obj):
+        """Get the email from the User model"""
+        return obj.user.email if obj.user else None  # Avoid errors if user is missing
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -48,6 +57,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 # -----------------------------------------------------------------------------
+# ------------------- Login Serializer -------------------
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
