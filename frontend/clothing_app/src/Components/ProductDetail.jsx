@@ -34,7 +34,7 @@ const ProductDetail = () => {
     const token = localStorage.getItem("access");
 
     if (!token) {
-      alert("⚠ Please log in to add items to your cart.");
+      alert("⚠ Please log in to add items in to your cart.");
       navigate("/login");
       return;
     }
