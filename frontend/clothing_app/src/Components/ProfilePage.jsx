@@ -7,6 +7,7 @@ import "./ProfilePage.css";
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
     name: "",
+    email: "",
     phone_number: "",
     address: "",
   });
@@ -56,63 +57,47 @@ const ProfilePage = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete your profile?")) {
-      try {
-        await axios.delete("http://127.0.0.1:8000/api/profile/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        alert("Profile deleted");
-        navigate("/");
-      } catch (err) {
-        setError("Failed to delete profile");
-      }
-    }
-  };
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="profile-container">
-      <div className="profile-card">
-        {/* Sidebar with Avatar and Name */}
-        <div className="profile-sidebar">
-          <img src="https://via.placeholder.com/80" alt="Profile Avatar" />
-          <h2>{profile.name}</h2>
-          
-          <div className="social-icons">
-            <i className="fab fa-facebook"></i>
-            <i className="fab fa-twitter"></i>
-            <i className="fab fa-instagram"></i>
+      
+      <div className="profile-header">
+          <div className="header-top">
+            <a href="/home" className="home-link">🏠 Home</a>
+          </div>
+
+          <div className="profile-info text-center">
+            <h2 className="profile-name">Hello, {profile.name}!</h2><br></br>
+            <p className="profile-email">{profile.email}</p>
           </div>
         </div>
 
-        {/* Profile Details */}
-        <div className="profile-details">
-          {!isEditing ? (
-            <>
-              <p><strong>Phone Number:</strong> {profile.phone_number}</p>
-              <p><strong>Address:</strong> {profile.address}</p>
-              <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
-              <button onClick={handleDelete} className="delete-btn">Delete Profile</button>
-            </>
-          ) : (
-            <form onSubmit={handleUpdate} className="profile-form">
-              <label>Name:</label>
-              <input type="text" name="name" value={profile.name} onChange={handleChange} required />
 
-              <label>Phone Number:</label>
-              <input type="text" name="phone_number" value={profile.phone_number} onChange={handleChange} required />
+      
+      <div className="profile-details">
+        {!isEditing ? (
+          <>
+            <p><strong>Phone:</strong> {profile.phone_number}</p>
+            <p><strong>Address:</strong> {profile.address}</p>
+            <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
+          </>
+        ) : (
+          <form onSubmit={handleUpdate} className="profile-form">
+            <label>Name:</label>
+            <input type="text" name="name" value={profile.name} onChange={handleChange} required />
 
-              <label>Address:</label>
-              <textarea name="address" value={profile.address} onChange={handleChange} required />
+            <label>Phone:</label>
+            <input type="text" name="phone_number" value={profile.phone_number} onChange={handleChange} required />
 
-              <button type="submit" className="save-btn">Save Changes</button>
-              <button type="button" onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
-            </form>
-          )}
-        </div>
+            <label>Address:</label>
+            <textarea name="address" value={profile.address} onChange={handleChange} required />
+
+            <button type="submit" className="save-btn">Save Changes</button>
+            <button type="button" onClick={() => setIsEditing(false)} className="cancel-btn">Cancel</button>
+          </form>
+        )}
       </div>
     </div>
   );
