@@ -1,0 +1,32 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .cart-item-details h3 {
+    margin: 0;
+  }
+  

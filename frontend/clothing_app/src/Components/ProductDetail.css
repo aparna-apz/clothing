@@ -1,0 +1,104 @@
+/* Page Layout */
+.product-detail-container {
+    margin-top: 50px;
+    padding: 40px;
+    background-color: #ffffff;
+  }
+  
+  /* Product Image */
+  .product-detail-img {
+    width: 100%; /* Ensures responsiveness */
+    max-width: 350px; /* Adjust size without cropping */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Optional: Smooth edges */
+    object-fit: contain; /* Prevent cropping */
+    border-radius: 10px;
+ 
+  }
+  
+  .product-detail-img:hover {
+    transform: scale(1.05);
+  }
+  .product-title-detail  {
+    font-size: 1.2rem; /* Adjust for listing */
+    color: #333;
+    font-weight: bold;
+  }
+  
+  /* Product Description */
+  .product-description {
+    font-size: 1.1rem;
+    color: #666;
+  }
+  
+  /* Product Price */
+  .product-price-detail {
+    font-size: rem; /* Adjust for detail page */
+    font-weight: bold;
+    color: #272727;
+    margin-bottom: 10px;
+  }
+  
+  /* Custom Buttons */
+  .custom-btn-primary {
+    background: linear-gradient(135deg, #353636, #666d72);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .custom-btn-primary:hover {
+    background: linear-gradient(135deg, #202020, #272c30);
+    color: #8a97a1;
+    transform: scale(1.05);
+  }
+  
+  .custom-btn-secondary {
+    background: white;
+    color: #8a97a1;
+    border: 2px solid #202020;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+  }
+  
+  .custom-btn-secondary:hover {
+    background: #8a97a1;
+    color: white;
+  }
+  
+  /* Loading Text */
+  .loading-text {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #555;
+    margin-top: 50px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .product-detail-container {
+      padding: 20px;
+    }
+  
+    .product-title {
+      font-size: 1.5rem;
+    }
+  
+    .product-price {
+      font-size: 1.5rem;
+    }
+  
+    .custom-btn-primary,
+    .custom-btn-secondary {
+      font-size: 0.9rem;
+    }
+  }
+  

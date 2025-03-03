@@ -1,0 +1,40 @@
+.product-card {
+    border: none;
+    background: transparent;
+    position: relative;
+  }
+  
+  .product-img {
+    width: 100%; /* Ensures responsiveness */
+    max-width: 350px; /* Adjust size without cropping */
+    height: auto; /* Maintain aspect ratio */
+    
+    object-fit: contain; /* Prevent cropping */
+    border-radius: 5px;
+    transition: transform 0.3s ease-in-out;
+   
+  }
+
+  .product-price-list {
+    font-size: 1.2rem; /* Adjust for listing */
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 5px;
+  }
+  
+  
+  /* Hover effect for clickable image */
+  .product-img:hover {
+
+    cursor: pointer;
+  }
+  
+
+  /* Gradient background for "Our Collections" */
+/* Full-width gradient background for "Our Collections" */
+.collection-header {
+    text-align: center;
+    color: rgb(30, 38, 39);
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+  }
+  
