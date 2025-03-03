@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -8,6 +8,7 @@ const CartPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("access");
+  const navigate = useNavigate(); // To navigate to the profile after order is placed
 
   useEffect(() => {
     if (!token) {
@@ -40,9 +41,40 @@ const CartPage = () => {
       });
 
       alert("Item removed from cart!");
-      setCartItems(cartItems.filter(item => item.id !== itemId));
+      setCartItems(cartItems.filter((item) => item.id !== itemId));
     } catch (error) {
       console.error("Error removing item:", error);
+    }
+  };
+
+  // Simulate the payment process
+  const handleCheckout = async () => {
+    try {
+      // Fake payment simulation (in real scenarios, this would involve payment gateway integration)
+      alert("Payment successful! Proceeding to place the order...");
+
+      const orderItems = cartItems.map((item) => ({
+        product_id: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/place_order/",
+        { cart_items: orderItems },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Order placed successfully! Redirecting to your profile...");
+        // Navigate to profile to show the order
+        navigate("/profile");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("There was an issue placing your order. Please try again.");
     }
   };
 
@@ -56,9 +88,8 @@ const CartPage = () => {
 
   return (
     <div className="container">
-      
       <h2 className="mb-3">Your Cart</h2>
-      <p className="mb-3"><a href="/home" >Back</a></p>
+      <p className="mb-3"><a href="/home">Back</a></p>
       {cartItems.length === 0 ? (
         <div>
           <p>Your cart is empty.</p>
@@ -81,16 +112,20 @@ const CartPage = () => {
                   <p>Price: ₹{item.product.price}</p>
                   <p>Quantity: {item.quantity}</p>
                   <p>Total: ₹{item.total_price}</p>
-                  <button className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" onClick={() => handleRemoveItem(item.id)}>
-                          <i className="fas fa-trash"></i> delete 
-                        </button><br></br>
-
-                   </div>
+                  <button
+                    className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                    onClick={() => handleRemoveItem(item.id)}
+                  >
+                    <i className="fas fa-trash"></i> delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-          <h3 className="total-price">Total  Price: ₹{totalCartPrice}</h3><br></br>
-          <button className="btn btn-success mb-5">Proceed to Checkout</button>
+          <h3 className="total-price">Total Price: ₹{totalCartPrice}</h3>
+          <button className="btn btn-success mb-5" onClick={handleCheckout}>
+            Proceed to Checkout
+          </button>
         </>
       )}
     </div>

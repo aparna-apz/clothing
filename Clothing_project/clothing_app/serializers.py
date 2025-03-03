@@ -113,3 +113,38 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         model = ShoppingCart
         fields = ['user', 'created_at', 'items']  # Include the user and associated items in the cart
 
+# -----------------------------------------------------------------
+# order
+
+from rest_framework import serializers
+from .models import Product, OrderHistoryItem
+
+# ------------------- OrderHistoryItem Serializer -------------------
+class OrderHistoryItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
+    product_image = serializers.SerializerMethodField()  # Field to get the product image URL
+
+    class Meta:
+        model = OrderHistoryItem
+        fields = ['id', 'product_name', 'quantity', 'price', 'total_price', 'product_price', 'product_image']
+
+    def get_product_image(self, obj):
+        """Return the product image URL"""
+        request = self.context.get("request")
+        if obj.product.image and request:  # Ensure there is a product image and request context is available
+            return request.build_absolute_uri(obj.product.image.url)
+        return None
+
+from rest_framework import serializers
+from .models import OrderHistory
+from .models import OrderHistoryItem
+
+class OrderHistorySerializer(serializers.ModelSerializer):
+    order_items = OrderHistoryItemSerializer(many=True, read_only=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
+    class Meta:
+        model = OrderHistory
+        fields = ['id', 'user', 'order_items', 'status', 'total_price', 'order_date']
+        read_only_fields = ['user', 'order_date']

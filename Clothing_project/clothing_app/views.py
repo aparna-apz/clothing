@@ -228,3 +228,80 @@ class RemoveCartItemView(APIView):
         cart_item.delete()  # Delete the item
 
         return Response({"message": "Item removed from cart"}, status=status.HTTP_204_NO_CONTENT)
+    
+# __________________order__________________________________
+
+from rest_framework.response import Response
+from rest_framework import status
+from .models import  Product
+from .serializers import OrderHistorySerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+
+from .models import OrderHistory, OrderHistoryItem, ShoppingCart, ShoppingCartItem
+from .serializers import OrderHistorySerializer
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def place_order(request):
+    try:
+        # Retrieve the cart items from the request
+        cart_items = request.data.get('cart_items')
+        if not cart_items:
+            return Response({'error': 'No cart items provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Ensure the user is authenticated
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Get the user's cart
+        cart = ShoppingCart.objects.filter(user=user).first()
+        if not cart:
+            return Response({'error': 'No cart found for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the order history
+        order = OrderHistory.objects.create(user=user)
+
+        # Loop through the cart items and add them to the order
+        for item in cart_items:
+            product = item.get('product')  # Retrieve product info from the cart item
+            if not product:
+                return Response({'error': f"Product {item.get('product_id')} not found"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            OrderHistoryItem.objects.create(
+                order=order,
+                product=product,
+                quantity=item.get('quantity'),
+                price=product.price
+            )
+
+        # Update the total price of the order
+        order.update_total_price()
+
+        # Clear the cart items after placing the order
+        cart.items.clear()
+
+        # Respond with success message and payment URL (this could be replaced with actual payment URL generation logic)
+        return Response({'message': 'Order placed successfully!', 'payment_url': 'your-payment-url'}, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        # Catch any unexpected errors and log them
+        print(f"Error placing order: {e}")
+        return Response({'error': 'Something went wrong while placing your order'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from .models import OrderHistory
+from .serializers import OrderHistorySerializer
+from rest_framework.permissions import IsAuthenticated
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_orders(request):
+    # Fetch all orders for the authenticated user
+    orders = OrderHistory.objects.filter(user=request.user)
+    serializer = OrderHistorySerializer(orders, many=True)
+    return Response(serializer.data)
+
