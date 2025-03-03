@@ -63,7 +63,7 @@ const CartPage = () => {
         <div>
           <p>Your cart is empty.</p>
           <Link to="/home" className="btn btn-primary">
-            Back to Home
+            Back
           </Link>
         </div>
       ) : (
@@ -82,14 +82,14 @@ const CartPage = () => {
                   <p>Quantity: {item.quantity}</p>
                   <p>Total: ₹{item.total_price}</p>
                   <button className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" onClick={() => handleRemoveItem(item.id)}>
-                          <i className="fas fa-trash"></i> Remove
+                          <i className="fas fa-trash"></i> delete 
                         </button><br></br>
 
                    </div>
               </div>
             ))}
           </div>
-          <h3 className="total-price">Total Cart Price: ₹{totalCartPrice}</h3><br></br>
+          <h3 className="total-price">Total  Price: ₹{totalCartPrice}</h3><br></br>
           <button className="btn btn-success mb-5">Proceed to Checkout</button>
         </>
       )}
