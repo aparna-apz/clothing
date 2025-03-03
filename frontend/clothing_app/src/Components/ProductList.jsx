@@ -21,7 +21,7 @@ const ProductList = () => {
     <div>
       {/* Full-width gradient background */}
       <div className="collection-header m-5">
-        <h1>Our Collections</h1>
+        <h1>Our Collection</h1>
       </div>
 
       <div className="container mt-5 mb-5">
