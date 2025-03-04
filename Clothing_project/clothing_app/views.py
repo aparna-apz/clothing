@@ -68,14 +68,14 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """Retrieve the logged-in user's profile with email"""
-        profile = get_object_or_404(Profile, user=request.user)  # Fetch existing profile or return 404
+        """Retrieve or create the logged-in user's profile"""
+        profile, created = Profile.objects.get_or_create(user=request.user)  # Ensure profile exists
         serializer = ProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
         """Update the logged-in user's profile"""
-        profile, created = Profile.objects.get_or_create(user=request.user)
+        profile, created = Profile.objects.get_or_create(user=request.user)  # Ensure profile exists
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -83,7 +83,6 @@ class ProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 #------------------------------------------------------------------------------------------------
 # products listing
@@ -230,66 +229,68 @@ class RemoveCartItemView(APIView):
         return Response({"message": "Item removed from cart"}, status=status.HTTP_204_NO_CONTENT)
     
 # __________________order__________________________________
-
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import  Product
-from .serializers import OrderHistorySerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from .models import  OrderHistory, OrderHistoryItem, Product
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from .models import ShoppingCart, OrderHistory, OrderHistoryItem, Product
 
-from .models import OrderHistory, OrderHistoryItem, ShoppingCart, ShoppingCartItem
-from .serializers import OrderHistorySerializer
+class PlaceOrderView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        print("Received order data:", request.data)  # Debugging log
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def place_order(request):
-    try:
-        # Retrieve the cart items from the request
-        cart_items = request.data.get('cart_items')
-        if not cart_items:
-            return Response({'error': 'No cart items provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Ensure the user is authenticated
+        # Get cart items from the request
+        items = request.data.get("cart_items", [])
+        if not items:
+            return Response({"error": "No cart items provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get the authenticated user
         user = request.user
-        if not user.is_authenticated:
-            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Get the user's cart
+        # Fetch the user's cart
         cart = ShoppingCart.objects.filter(user=user).first()
         if not cart:
-            return Response({'error': 'No cart found for this user'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "No cart found for this user"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create the order history
+        # Create a new order history
         order = OrderHistory.objects.create(user=user)
 
-        # Loop through the cart items and add them to the order
-        for item in cart_items:
-            product = item.get('product')  # Retrieve product info from the cart item
-            if not product:
-                return Response({'error': f"Product {item.get('product_id')} not found"}, status=status.HTTP_400_BAD_REQUEST)
-            
+        for item in items:
+            product_id = item.get("product_id")
+            quantity = item.get("quantity")
+
+            if not product_id or not quantity:
+                return Response({"error": "Invalid item format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return Response({"error": f"Product ID {product_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+
             OrderHistoryItem.objects.create(
                 order=order,
                 product=product,
-                quantity=item.get('quantity'),
+                quantity=quantity,
                 price=product.price
             )
 
-        # Update the total price of the order
+        # Update the total price
         order.update_total_price()
 
-        # Clear the cart items after placing the order
-        cart.items.clear()
+        # Clear the cart after placing the order
+        cart.items.all().delete()
 
-        # Respond with success message and payment URL (this could be replaced with actual payment URL generation logic)
-        return Response({'message': 'Order placed successfully!', 'payment_url': 'your-payment-url'}, status=status.HTTP_201_CREATED)
-
-    except Exception as e:
-        # Catch any unexpected errors and log them
-        print(f"Error placing order: {e}")
-        return Response({'error': 'Something went wrong while placing your order'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"message": "Order placed successfully!", "order_id": order.id},
+            status=status.HTTP_201_CREATED
+        )
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response

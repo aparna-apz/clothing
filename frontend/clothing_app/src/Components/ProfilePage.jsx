@@ -43,7 +43,7 @@ const ProfilePage = () => {
       setError("Failed to load profile.");
     }
   };
-
+console.log(orders)
   // Fetch user orders
   const fetchOrders = async () => {
     try {
@@ -88,16 +88,42 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <div className="header-top">
-          <a href="/home" className="home-link">🏠 Home</a>
-        </div>
+      <div
+  className="profile-header-center"
+  style={{
+    background: "linear-gradient(to right,rgb(84, 84, 95),rgb(126, 128, 184))",
+    height: "80px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 20px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    borderRadius: "0 0 10px 10px",
+  }}
+>
+  <a
+    href="/home"
+    className="home-link"
+    style={{
+      color: "#fff",
+      fontSize: "1rem",
+      textDecoration: "none",
+      
+    }}
+  >
+    🏠 Home
+  </a>
 
-        <div className="profile-info text-center">
-          <h2 className="profile-name">Hello, {profile.name}!</h2>
-          <p className="profile-email">{profile.email}</p>
-        </div>
-      </div>
+  <div className="profile-info" style={{ margin:'0',color: "#fff"}}>
+    <h2 className="profile-name" style={{ margin:'0',  fontSize: "1.75rem" }}>
+      Hello, {profile.name}!
+    </h2>
+    <p className="profile-email" style={{ margin:'0', fontSize: "1rem" }}>
+      {profile.email}
+    </p>
+  </div>
+</div>
+
 
       <div className="profile-details">
         {!isEditing ? (
@@ -129,37 +155,36 @@ const ProfilePage = () => {
           <p>You have no orders yet.</p>
         ) : (
           <div>
-            {orders.map((order) => (
-              <div key={order.id} className="order-card">
-                <h3>Order #{order.id}</h3>
-                <p><strong>Status:</strong> {order.status}</p>
-                <p><strong>Order Date:</strong> {new Date(order.order_date).toLocaleString()}</p>
-                <p><strong>Total Price:</strong> ₹{order.total_price}</p>
-                <div className="order-items">
-                  <h4>Items:</h4>
-                  <div className="order-items-list">
-                    {order.order_items.map((item) => (
-                      <div key={item.id} className="order-item-card">
-                        {item.product ? (
-                          <div className="order-item-details">
-                            <img
-                              src={item.product.image_url || "default-image-url.jpg"} 
-                              alt={item.product.name}
-                              className="order-item-image"
-                            />
-                            <div className="order-item-info">
-                              <span>{item.product.name}</span> (x{item.quantity}) - ₹{item.total_price}
-                            </div>
-                          </div>
-                        ) : (
-                          <p>Product details unavailable</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+              {orders.map((order) => (
+  <div key={order.id} className="order-card">
+    <h3>Order #{order.id}</h3>
+    <p><strong>Status:</strong> {order.status}</p>
+    <p><strong>Order Date:</strong> {new Date(order.order_date).toLocaleString()}</p>
+    <p><strong>Total Price:</strong> ₹{order.total_price}</p>
+    <div className="order-items">
+      <h4>Items:</h4>
+      <div className="order-items-list">
+        {order.order_items.map((item) => (
+          <div key={item.id} className="order-item-card">
+            {item.product ? (
+              <div className="order-item-details">
+                
+                
+                <div className="order-item-info">
+                  <h3>{item.product.name}</h3>
+                  <span>Quantity: {item.quantity}</span> - ₹{item.total_price}
                 </div>
               </div>
-            ))}
+            ) : (
+              <p>Product details unavailable</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+))}
+
           </div>
         )}
       </div>

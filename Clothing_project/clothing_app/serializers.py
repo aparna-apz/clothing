@@ -121,18 +121,16 @@ from .models import Product, OrderHistoryItem
 
 # ------------------- OrderHistoryItem Serializer -------------------
 class OrderHistoryItemSerializer(serializers.ModelSerializer):
-    product_name = serializers.CharField(source='product.name', read_only=True)
-    product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
-    product_image = serializers.SerializerMethodField()  # Field to get the product image URL
+    product = ProductSerializer(read_only=True)
 
     class Meta:
         model = OrderHistoryItem
-        fields = ['id', 'product_name', 'quantity', 'price', 'total_price', 'product_price', 'product_image']
+        fields = ['id', 'product', 'quantity', 'total_price']  # Removed 'price' if it doesn't exist
 
     def get_product_image(self, obj):
         """Return the product image URL"""
         request = self.context.get("request")
-        if obj.product.image and request:  # Ensure there is a product image and request context is available
+        if obj.product.image and request:
             return request.build_absolute_uri(obj.product.image.url)
         return None
 

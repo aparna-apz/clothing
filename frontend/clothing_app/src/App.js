@@ -14,11 +14,14 @@ import Register from "./Components/Register";
 import CartPage from "./Components/CartPage";
 import Logout from "./Components/Logout";
 import ProfilePage from "./Components/ProfilePage";
-
+import PrivateRoute from "./Components/PrivateRoute";
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<PrivateRoute />}>
         <Route path="/home" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -27,15 +30,16 @@ function App() {
         <Route path="/dresses" element={<Dresses />} />
         <Route path="/tops" element={<Tops />} />
         <Route path="/sets" element={<Sets />} />
-        
-        {/* Protect the Cart Page */}
         <Route path="/cart" element={<CartPage />} />
         <Route path="/logout" element={<Logout />} />
         
         <Route path="/products" element={<ProductList />} /> 
         <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+       
+        </Route>
+       
+        {/* Protect the Cart Page */}
+
       </Routes>
     </Router>
   );

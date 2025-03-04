@@ -50,33 +50,35 @@ const CartPage = () => {
   // Simulate the payment process
   const handleCheckout = async () => {
     try {
-      // Fake payment simulation (in real scenarios, this would involve payment gateway integration)
-      alert("Payment successful! Proceeding to place the order...");
+        console.log("Cart items before placing order:", cartItems);
 
-      const orderItems = cartItems.map((item) => ({
-        product_id: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price,
-      }));
+        const orderItems = cartItems.map((item) => ({
+            product_id: item.product.id,
+            quantity: item.quantity,
+        }));
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/place_order/",
-        { cart_items: orderItems },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        console.log("Sending order data:", JSON.stringify({ cart_items: orderItems }));
 
-      if (response.status === 201) {
+        const response = await axios.post(
+            "http://127.0.0.1:8000/api/place_order/",
+            { cart_items: orderItems }, // ✅ Corrected request format
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json", // ✅ Ensure correct header
+                },
+            }
+        );
+
+        console.log("Order placed successfully:", response.data);
         alert("Order placed successfully! Redirecting to your profile...");
-        // Navigate to profile to show the order
         navigate("/profile");
-      }
     } catch (error) {
-      console.error("Error placing order:", error);
-      alert("There was an issue placing your order. Please try again.");
+        console.error("Error placing order:", error.response?.data || error.message);
+        alert("There was an issue placing your order. Please try again.");
     }
-  };
+};
+
 
   if (isLoading) {
     return <p className="loading-text">Loading cart items...</p>;

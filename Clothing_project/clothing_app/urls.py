@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, product_list, product_detail, ShoppingCartView, ShoppingCartDetailView, RemoveCartItemView, ProfileView, place_order, get_user_orders
+from .views import RegisterView, product_list, product_detail, ShoppingCartView, ShoppingCartDetailView, RemoveCartItemView, ProfileView, PlaceOrderView, get_user_orders
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -21,7 +21,7 @@ urlpatterns = [
     path("cart/remove/<int:item_id>/", RemoveCartItemView.as_view(), name="cart-remove-item"),
 
     # Order management endpoints
-    path('place_order/', place_order, name='place_order'),  # Place an order
+    path('place_order/', PlaceOrderView.as_view(), name='place_order'),  # Place an order
     path('orders/', get_user_orders, name='get_user_orders'),  # Get all orders for a user
 ]
 

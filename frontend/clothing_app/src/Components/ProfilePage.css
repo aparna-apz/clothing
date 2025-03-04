@@ -6,12 +6,6 @@
   font-family: Arial, sans-serif;
 }
 
-.profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
 
 .header-top .home-link {
   font-size: 18px;
